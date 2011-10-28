@@ -4,6 +4,9 @@
 \usepackage{url}
 \usepackage{acronym}
 
+\acrodef{PDF}[PDF]{Probability Density Function}
+\acrodef{GMM}[GMM]{Gaussian Mixture Model}
+
 \begin{document}
 
 \title{MLPM project \\ The effect of smoothness}
@@ -19,16 +22,56 @@
 \section{Introduction}
 \label{sec:introduction}
 
-In this paper we investigate the effect of several forms of \emph{smoothness} in machine learning problems. We try regression and classification problems with artificial datasets and vary several parameters:
-\begin{description}
-\item[Function] The smoothness of the underlying function.
-\item[Noise] The amount of noise in the dataset.
-\item[Sampling] The size of the sample and the size of the domain over which it has been drawn.
-\end{description}
+In machine learning 
+In this paper we investigate the effect of smoothness of the dataset on the 
 
-%Which algorithms will we use?
-% naive bayes (very stable because of the seperate estimates for each dimension)
-% k-nn (stability depends on k)
-% dec. trees or nn (unstable, dec. trees are easy to understand but difficult to analyse because of the weird decision boundaries)
+
+To investigate the effect that smoothness has on classification performance we first need to define some idea of smoothness which we can easily vary and then run a set of experiments for different levels of smoothness. We view classification as a two class problem, with each class being represented by some \ac{PDF} over the attribute space. Given this view the \emph{smoothness} of a class is determined by the shape of the \ac{PDF}. We define the \ac{PDF} for each class as a \ac{GMM} with $k$ mixture components. Intuitively, the smoothness is then determined by the number of components in the mixture. With just one component the \ac{PDF} corresponds to a Gaussian distribution which is very smooth, while increasing the number of components increases the peakedness of the distribution making it less smooth.
+
+One way to see this is in terms of inherent noise in the dataset, which we define as the noise in definition 4 of \cite{Domingos2000}:
+\begin{equation}
+\label{eq:noise}
+N(x) = E_t[L(t,y_*)]
+\end{equation}
+Since the Bayes optimal prediction predicts the class for which the \ac{PDF} is highest at $x$, the noise is proportional to the area under the \ac{PDF} for which the \ac{PDF} of the other class is higher. In other words, the more overlap there is between classes, the higher the noise will be.
+
+\section{Experimental method}
+\label{sec:experimental_method}
+
+\begin{enumerate}
+\item We generate a set of problems containing two classes denoted $C_0$ and $C_1$. Each class is represented by a \ac{PDF} which we define as a \ac{GMM} with $k$ components.
+\item For each two class problem we generate a set of training sets $D = \{d_1, d_2, ..., d_n\}$ and a corresponding test set $T$.
+\item We train a classifier on each trainingset $d_i \in D$ and evaluate the accuracy on the test set.
+\item Finally, we compute the average bias and average variance over $D$.
+\end{enumerate}
+
+%Design choices:
+% 2 class problem (2 PDFs) or concept learning problem (1 PDF versus rest). How to define the PDF (MVD, GMM, uniform)?
+% Things to vary and try out: number of dimensions, real noise (next to the inherent noise), different number of components per class or number of datapoints per class, forms of PDF, learning algorithm (NB, kNN, ANN, Dec. Trees, SVM).
+
+%Initial experiments:
+% 2d 2 class
+% GMM 1-5 mixtures (k) per class
+% for each k:
+%  m = |D| := 5 - 50 - 500 - 5000 (per class)
+%  z = |T| := 1000 (500 per class)
+% 100 runs each to estimate bias/variance/noise
+% ?? runs each to average over different 2 class problems (e.g. pick new GMM each time)
+
+%Workflow:
+% 1. create pdfs: pick pi, mu, Sigma for each class {0,1} and k = 1-5
+% 2. sample 100 datasets for each choice of k (= 400 total)
+% 3. sample T
+% 4. compute y_*
+% 5. compute y_m = mode(t-y_*)
+% 6. train classifier on each d \in D
+% 7. evaluate on T
+% Repeat enough times to get stable average over possible problems
+
+%Measures:
+% Accuracy: |TP|+|TN|/z
+% Average bias E_x[L(y_*, y_m)]
+% Average var E_x E_D[ L(y_m, y) ]
+% Dataset noise L(t,y_*)
 
 \end{document}
