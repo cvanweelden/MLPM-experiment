@@ -34,5 +34,5 @@ sample_t(:,4,iter) = index' - 1;
 
 
 %Step 5: Compute the noise: E|t-y*|
-decomposition(4,:,iter) = repmat(mean(abs(sample_t(:,3,iter)-sample_t(:,4,iter))),1,no_sizes*no_of_methods);
+decomposition(4,:,k,iter) = repmat(mean(abs(sample_t(:,3,iter)-sample_t(:,4,iter))),1,no_sizes*no_of_methods);
 %kiloknaller(iter,k) = mean(abs(sample_t(:,3,iter)-sample_t(:,4,iter)));

@@ -25,13 +25,13 @@ end
 %Step 7: Evaluate classifications
 
 % loss = L(y, t)
-decomposition(1, 1:no_sizes, iter) = mean(mean(abs(predictions - repmat(sample_t(:,3, iter),[1,length(sample_sizes), train_sets]))),3);
+decomposition(1, 1:no_sizes, k,iter) = mean(mean(abs(predictions - repmat(sample_t(:,3, iter),[1,length(sample_sizes), train_sets]))),3);
 
 ym = round(mean(predictions,3));
 
 % bias = L(y*,ym)
-decomposition(2, 1:no_sizes, iter) = mean(abs(ym - repmat(sample_t(:,3,iter),[1,length(sample_sizes)])),1);
+decomposition(2, 1:no_sizes, k,iter) = mean(abs(ym - repmat(sample_t(:,3,iter),[1,length(sample_sizes)])),1);
 
 % variance = ED[L(ym,y)]
-decomposition(3, 1:no_sizes, iter) = mean(mean(abs(repmat(ym,[1,1,train_sets]) - predictions),1),3);
+decomposition(3, 1:no_sizes, k,iter) = mean(mean(abs(repmat(ym,[1,1,train_sets]) - predictions),1),3);
 

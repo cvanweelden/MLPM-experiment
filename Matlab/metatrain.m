@@ -3,7 +3,7 @@ clear
 
 
 %Parameters:
-k = 1;
+k_max = 5;
 xmin = -1;
 xmax = 1;
 sdmin = 0.1;
@@ -15,7 +15,7 @@ test_size = 500;
 
 no_of_tests = 10;
 no_sizes = length(sample_sizes);
-no_of_methods = 2; %[Naive Bayes, SVM]
+no_of_methods = 1; %[Naive Bayes, SVM]
 
 %Initialize sample matrices 4D (sample_size x |param|+|class| x train_sets
 %x no_of_tests)
@@ -29,16 +29,18 @@ sample_t = zeros(test_size *2, 4, no_of_tests);
 
 % Results matrix 3D (|performance, bias, variance, noise| x sample_sizes x
 % no_of_tests)
-decomposition = zeros(4,no_sizes*no_of_methods, no_of_tests);
+decomposition = zeros(4,no_sizes*no_of_methods, k_max, no_of_tests);
 tic
 for iter= 1:no_of_tests
-    
-    gmm_sampling;
-    naive_bayestrainer;
-    %svmtrainer;
-    
-    fprintf('iteration: %d:\n',iter);
-    time_spent = toc
+    for k = 1:k_max
+        gmm_sampling;
+        naive_bayestrainer;
+        %svmtrainer;
+            
+        fprintf('iteration %d, k=%d:\n',iter, k);
+        time_spent = toc
+    end
+
     
 end
 
@@ -50,4 +52,4 @@ if sum(isnan(decomposition(:))) > 0
     decomposition(isnan(decomposition(:))) = 0;
 end
 
-meandecomp = mean(decomposition, 3)
+meandecomp = mean(decomposition, 4)
