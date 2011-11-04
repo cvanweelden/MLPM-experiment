@@ -7,6 +7,7 @@
 \acrodef{PDF}[PDF]{Probability Density Function}
 \acrodef{GMM}[GMM]{Gaussian Mixture Model}
 \acrodef{NB}[NB]{Naive Bayes}
+\acrodef{kNN}[kNN]{k-Nearest Neighbour}
 
 \begin{document}
 
@@ -33,9 +34,9 @@ One way to see this is in terms of inherent noise in the problem, which we defin
 \label{eq:noise}
 N(x) = E_t[L(t,y_*)]
 \end{equation}
-If we keep the mean variance of the distributions equal, then with more components we will have a higher average probability that the \ac{PDF}s overlap for a datapoint $x$. Since the Bayes optimal prediction predicts the class for which the \ac{PDF} is highest at $x$, the noise is proportional to the area under the \ac{PDF} for which the \ac{PDF} of the other class is higher. In other words, the more components make up the distribution of a class, the more overlap there is between classes, and therefore the higher the noise component in the loss is.
+If we keep the standard deviation of the distributions approsimately equal, then with more components we will have a higher average probability that the \ac{PDF}s overlap for a datapoint $x$. Since the Bayes optimal prediction predicts the class for which the \ac{PDF} is highest at $x$, the noise is proportional to the area under the \ac{PDF} for which the \ac{PDF} of the other class is higher. In other words, the more components make up the distribution of a class, the more overlap there is between classes, and therefore the higher the noise component in the loss is.
 
-To show this effect we generated \ac{GMM}s with an increasing amount of components and measured their noise. Averaged over 25 random models of the same number of components, it is clear that the noise increases with the number of components, growing asymptotically towards 0.5, which represents the amount of noise where the Bayes optimal decision is correct half of the time: chance level. The results are shown in Figure \ref{fig:noisepercomp}.
+To show this effect we generated \ac{GMM}s with an increasing amount of components and measured their noise. The models where generated according tot he method described in section \ref{sec:experimental_method}. Averaged over 25 random models of the same number of components, it is clear that the noise increases with the number of components, growing asymptotically towards 0.5, which represents the amount of noise where the Bayes optimal decision is correct half of the time: chance level. The results are shown in Figure \ref{fig:noisepercomp}.
 
 \begin{figure}
     \label{fig:noisepercomp}
@@ -46,12 +47,20 @@ To show this effect we generated \ac{GMM}s with an increasing amount of componen
 \section{Experimental method}
 \label{sec:experimental_method}
 
+To investigate the effect that the smoothness of the distributions has on classification performance we run a set of experiments. We generate a set of two-class problems with a given smoothness (as characterized by the number of components in the \ac{GMM} representing each class) and for each problem we estimate the expected loss, average bias, and average variance.
+
 \begin{enumerate}
 \item We generate a problem containing two classes denoted $C_0$ and $C_1$. Each class is represented by a \ac{PDF} which we define as a \ac{GMM} with $k$ components\footnote{We use a 2-dimensional attribute space for ease of visualization.}. We do this for $k = [1 .. 5]$. We pick the parameters corresponding to component $j$ of class $i$ as follows. The prior probability for each component is $\pi_{ij} = rand([1 .. 5]) / Z_i$ where $Z_i$ is a normalizing factor such that $\Sigma_{j} pi_{ij} = 1$. The mean of each component is $\mu_{ij} = (rand([-1,1]),rand([-1,1]))$. We use a scalar covariance matrix $\sigma I$ with $\sigma = rand([0.1,0.4])$.
-\item For each two class problem we generate a set of 100 training sets $D = \{d_1, d_2, ..., d_{100}\}$ and a corresponding test set $T$. We do this for $|D| \in {10, 100, 1000, 1000}$ with half of the data points being sampled from each class. For the test set $|T| = 1000$, also with half of the points being sampled from each class.
-\item We train a classifier on each training set $d \in D$ and evaluate the accuracy on the test set.
-\item Finally, we compute the average bias and average variance on $T$.
+\item For each two class problem we generate a set of 50 training sets $D = \{d_1, d_2, ..., d_{50}\}$ and a corresponding test set $T$. We do this for $|D| \in {10, 100, 1000, 1000}$ with half of the data points being sampled from each class. For the test set $|T| = 1000$, also with half of the points being sampled from each class.
+\item We train a classifier on each training set $d \in D$ and evaluate the loss on the test set.
+\item Finally, we compute the average bias and average variance on $T$ over all the training sets $d \in D$.
 \end{enumerate}
+
+We compute the loss as 0/1-loss and report the mean over all training sets and all problems for each number of mixture components and for each size of training set. We compute the average bias and average variance as given in \cite{Domingos2000} and again report the mean over all training sets and all problems given the number of components in each class and the training set size.
+
+We perform these experiments with two different classifiers: \ac{NB} and \ac{kNN}. \ac{NB} does not have any parameters, so we simply train it once and calculate its predictions. For \ac{kNN} we have to select $k$, the number of neighbours. Since we are interested in the best \ac{kNN} classifier possible for each problem and training set, we perform an oracle run and select the $k$ which gives the best result on the test set. We do not try every value for $k$ but we sample 10 equidistant values from the range $[1 .. |D|]$, thus ranging from Nearest Neighbour classification to simply predicting the mean over the whole data.
+
+For \ac{NB} we expect that for less smooth problems the expected loss will be higher, the intuition being that less smooth problems are harder to learn. For the same reason we expect the bias component of the loss to increase with the number of components per class. For both we expect them to be lower for larger training sets. For the average variance we expect to see that it increases with the amount of mixture components, but we expect this increase to be greater for smaller sizes of training set, since there are less datapoints per mixture component.
 
 \section{Results}
 \label{sec:results}
