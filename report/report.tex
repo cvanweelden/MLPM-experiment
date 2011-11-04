@@ -3,6 +3,8 @@
 \usepackage{amsmath}
 \usepackage{url}
 \usepackage{acronym}
+\usepackage[pdftex]{graphicx}
+
 
 \acrodef{PDF}[PDF]{Probability Density Function}
 \acrodef{GMM}[GMM]{Gaussian Mixture Model}
@@ -37,11 +39,11 @@ If we keep the mean variance of the distributions equal, then with more componen
 
 To show this effect we generated \ac{GMM}s with an increasing amount of components and measured their noise. Averaged over 25 random models of the same number of components, it is clear that the noise increases with the number of components, growing asymptotically towards 0.5, which represents the amount of noise where the Bayes optimal decision is correct half of the time: chance level. The results are shown in Figure \ref{fig:noisepercomp}.
 
-\begin{figure}
-    \label{fig:noisepercomp}
-    
+\begin{figure}[H!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{noisePerK.pdf}
+    \caption{The effect on the noise of the use of more mixture components in the \ac{GMM}. \label{fig:noisepercomp}}
 \end{figure}
-
 
 \section{Experimental method}
 \label{sec:experimental_method}
@@ -56,8 +58,33 @@ To show this effect we generated \ac{GMM}s with an increasing amount of componen
 \section{Results}
 \label{sec:results}
 
-We 
+\subsection{Naive Bayes}
+We trained Naive Bayes classifiers for all settings of the \ac{GMM} we defined in the last section. The resulting error is shown in Figure~\ref{fig:nbloss}, and the subdivision of this into bias and variance can be seen in Figures~\ref{fig:nbbias} and \ref{fig:nbvar} respectively.
 
+\begin{figure}[H!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{nb_loss_1-5c.pdf}
+    \caption{The average error of the Naive Bayes classifier on different amounts of training data, given different levels of smoothness of the data. \label{fig:nbloss}}
+\end{figure}
+\begin{figure}[H!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{nb_bias_1-5c.pdf}
+    \caption{The average bias of the Naive Bayes classifier on different amounts of training data, given different levels of smoothness of the data. \label{fig:nbbias}}
+\end{figure}
+\begin{figure}[H!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{nb_variance_1-5c.pdf}
+    \caption{The average variance of the Naive Bayes classifier on different amounts of training data, given different levels of smoothness of the data. \label{fig:nbvar}}
+\end{figure}
+
+The figures show that in general, less training data results in a higher loss and variance, which was to be expected. Furthermore, the loss is higher when the smoothness increases. This might result solely from there being more noise, but Figure~\ref{fig:nbbias} shows that the bias increases sharply on less smooth data too.
+There is less increase in the amount of variance overall, but this increase seems to be more significant with less training data than on much training data.
+%Something on the dips in the variance? Wait for final results.
+
+\subsection{kNN}
+
+
+\section{Conclusion}
 
 
 
