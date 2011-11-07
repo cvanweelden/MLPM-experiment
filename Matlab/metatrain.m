@@ -13,7 +13,7 @@ sample_sizes = [5 50 500 5000];
 train_sets = 50;
 test_size = 500;
 
-no_of_tests = 10;
+no_of_tests = 20;
 no_sizes = length(sample_sizes);
 no_of_methods = 1; %[Naive Bayes, SVM]
 
@@ -31,12 +31,15 @@ sample_t = zeros(test_size *2, 4, no_of_tests);
 % no_of_tests)
 decomposition = zeros(4,no_sizes*no_of_methods, k_max, no_of_tests);
 tic
+
+KKNN = zeros(no_sizes, k_max, no_of_tests,train_sets);
+
 for iter= 1:no_of_tests
     for k = 1:k_max
         gmm_sampling;
-        naive_bayestrainer;
+        %naive_bayestrainer;
         %svmtrainer;
-            
+        knntrainer;    
         fprintf('iteration %d, k=%d:\n',iter, k);
         time_spent = toc
     end
