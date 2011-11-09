@@ -9,7 +9,7 @@
 \acrodef{PDF}[PDF]{Probability Density Function}
 \acrodef{GMM}[GMM]{Gaussian Mixture Model}
 \acrodef{NB}[NB]{Naive Bayes}
-\acrodef{kNN}[kNN]{k-Nearest Neighbour}
+\acrodef{kNN}[KNN]{k-Nearest Neighbour}
 
 \begin{document}
 
@@ -60,32 +60,32 @@ To investigate the effect that the smoothness of the distributions has on classi
 
 We compute the loss as 0/1-loss and report the mean over all training sets and all problems for each number of mixture components and for each size of training set. We compute the average bias and average variance as given in \cite{Domingos2000} and again report the mean over all training sets and all problems given the number of components in each class and the training set size.
 
-We perform these experiments with two different classifiers: \ac{NB} and \ac{kNN}. \ac{NB} does not have any parameters, so we simply train it once and calculate its predictions. For \ac{kNN} we have to select $k$, the number of neighbours. Since we are interested in the best \ac{kNN} classifier possible for each problem and training set, we perform an oracle run and select the $k$ which gives the best result on the test set. We do not try every value for $k$ but we sample 10 equidistant values from the range $[1 .. |D|]$, thus ranging from Nearest Neighbour classification to simply predicting the mean over the whole data.
+We perform these experiments with two different classifiers: \ac{NB} and \ac{kNN}. \ac{NB} does not have any parameters, so we simply train it once and calculate its predictions. For \ac{kNN} we have to select $K$, the number of neighbours. Since we are interested in the best \ac{kNN} classifier possible for each problem and training set, we perform an oracle run and select the $K$ which gives the best result on the test set. We do not try every value for $K$ but we sample 10 equidistant values from the range $[1 .. |D|]$, thus ranging from Nearest Neighbour classification to simply predicting the mean over the whole data.
 
-For \ac{NB} we expect that for less smooth problems the expected loss will be higher, the intuition being that less smooth problems are harder to learn. For the same reason we expect the bias component of the loss to increase with the number of components per class. For both we expect them to be lower for larger training sets. For the average variance we expect to see that it increases with the amount of mixture components, but we expect this increase to be greater for smaller sizes of training set, since there are less datapoints per mixture component.
+We expect that for less smooth problems the expected loss will be higher, the intuition being that less smooth problems are harder to learn. For the same reason we expect the bias component of the loss to increase with the number of components per class. For both we expect them to be lower for larger training sets. For the average variance we expect to see that it increases with the amount of mixture components, but we expect this increase to be greater for smaller sizes of training set, since there are less datapoints per mixture component.
 
 \section{Results}
 \label{sec:results}
 
 \subsection{KNN}
-In contrast to training a Naive Bayes classifier, for KNN it is important to choose a sensible value for K, the number of neighbors taken into account. Because training KNN completely for some different values of K only to find out good ones is very expensive, we decided to choose the best amount of K dynamically, each time a classifier is trained. The possible amounts of K are made dependent on the size of the training set, taking ten values $K \in \{0.1D,0.2D,\ldots,D\}$, to make K being in proportion to the amount of data available, and subsequently covering an approximately equally large area. We classify for each of these values, and store the highest performance of these. To be able to see what this leads to, we put the occurrences of different K's in histograms (Figures~\ref{fig:hist10} and \ref{fig:hist10000} show the results for a training set of 10 samples and 10000 samples respectively).
+In contrast to training a Naive Bayes classifier, for KNN it is important to choose a sensible value for $K$, the number of neighbors taken into account. Because training KNN completely for some different values of $K$ only to find out good ones is very expensive, we try a range of $K$ as described in the previous section, classify for each of these values and store the highest performance. To be able to see what this leads to, we put the occurrences of different $K$'s in histograms (Figures~\ref{fig:hist10} and \ref{fig:hist10000} show the results for a training set of 10 samples and 10000 samples respectively).
 
 \begin{figure}[htb]
     \centering
     \includegraphics[width=.9\textwidth]{Hist10.pdf}
-    \caption{Histogram of the amount of occurrences of different values of K in KNN on a training set size of 10, over all trained classifiers, for different levels of smoothness (No of GMM components). \label{fig:hist10}}
+    \caption{Histogram of the amount of occurrences of different values of $K$ in KNN on a training set size of 10, over all trained classifiers, for different levels of smoothness (No of GMM components). \label{fig:hist10}}
 \end{figure}
 
 \begin{figure}[htb]
     \centering
     \includegraphics[width=.9\textwidth]{Hist10000.pdf}
-    \caption{Histogram of the amount of occurrences of different values of K in KNN on a training set size of 10000, over all trained classifiers, for different levels of smoothness (No of GMM components). \label{fig:hist10000}}
+    \caption{Histogram of the amount of occurrences of different values of $K$ in KNN on a training set size of 10000, over all trained classifiers, for different levels of smoothness (No of GMM components). \label{fig:hist10000}}
 \end{figure}
 
-The histograms show that the higher the amount of training sets, the larger the preference for relatively small values of K. Furthermore, the smoother data is overrepresented a little at low values of K, and the least smooth data is overrepresented at high values of K, for all amounts of training data. This suggests that smoother data is easier to represent (low values of K are optimal) by KNN, and that less data is needed with larger training set sizes. This however might also be caused by the Gaussian nature of the distribution of the data, it being likely that a small amount of data gives a quite good estimation of the mean of the distribution already, therefore one tenth of the training set size might be quite big already as the training set gets bigger itself. 
+The histograms show a preference for relatively small values of $K$, especially for larger training set sizes. This however might also be caused by the speherical Gaussian nature of the distribution of the data. The probability for each class decreases proportionally to the distance to the mean. It is likely that a small amount of data gives a quite good estimation of the mean of the distribution, therefore one tenth of the training set size might be quite big already as the training set gets bigger itself. 
 
 \subsection{Classification}
-We trained Naive Bayes classifiers and KNN classifiers for all settings of the \ac{GMM} we defined in the last section. The resulting error is shown in Figure~\ref{fig:loss}. It can be seen that the loss is dependent on the amount of training data, with larger numbers of data lowering the loss (this improvement seems to slow towards more data being usd). Furthermore, KNN seems to work better for low amounts of training data. The difference between NB and KNN with more data is small, but KNN tends to be better with less smooth data and NB with smoother data.
+We trained Naive Bayes classifiers and KNN classifiers for all settings of the \ac{GMM} we defined in the last section. The resulting error is shown in Figure~\ref{fig:loss}. It can be seen that the loss is dependent on the amount of training data, with larger numbers of data lowering the loss (this improvement seems to slow towards more data being used). Furthermore, KNN seems to work better for low amounts of training data. The difference between NB and KNN with more data is small, but KNN tends to be better with less smooth data and NB with smoother data.
 
 \begin{figure}[htb]
     \centering
@@ -121,10 +121,16 @@ We were interested in the relation between the loss of the classifiers and the c
     \caption{Naive Bayes. Comparison of the average loss with the sum of the average bias, variance and noise. Each is normalized so all values for a data series sum to 1. \label{fig:nblosscomp}}
 \end{figure}
 
-The results show that when normalized, the loss of each classification setting is very similar to the sum of its components, which suggests a linear relationship between them. It is not a simple sum because the sum of the components tends to be larger than the loss, but the graphs suggest there is no real intricate relationship with the settings used and the classifiers used.
+The results show that when normalized, the loss of each classification setting is very similar to the sum of its components, which suggests a linear relationship between them. It is not a simple sum because the sum of the components tends to be larger than the loss, but the graphs suggest the relationship is approximately proportional with the settings used and the classifiers used.
 
 \section{Conclusion}
 
+
+From these result we can draw several conclussions. For sufficiently large training sets, \ac{kNN} performs better\footnote{as measured by average loss} than \ac{NB} when the data is less smooth, while \ac{NB} performs better on smoother data. This seems to be because for less smooth data the bias component of the loss is smaller for \ac{kNN} while for smoother data it is smaller for \ac{NB}. This can be explained by the fact that \ac{NB} generates relatively smooth distributions while \ac{kNN} seems to have a preference for relatively small values of $K$ for these type of Guassian classification problems.
+
+Furthermore, for very small small datasets \ac{kNN} consistently outperforms \ac{NB} for all levels of smoothness. Even though the mean average bias is larger for smooth data, the mean average variance is much lower. This effect is not seen for larger datasets in which case the average variance is roughly the same, or a bit higher for \ac{kNN}. With such a small dataset, \ac{NB} does not have enough data to correctly estimate the conditional probabilities, but the Nearest Neighbour method does not have this problem.
+
+In general the experiments show that average loss decreases for smoother problems and although the loss is lower for larger datasets, the decrease relative to the smoothness behaves the same over different sizes of dataset. This decrease seems to be mainly from lower bias for smooth problems, showing that the learning methods have less trouble approximating the smoother functions. The variance also decreases for smoother problems, but this decrease is less marked and seems to be less for larger datasets. This shows that for \ac{kNN} and \ac{NB} the variance in learning is determined more by the size of the dataset than the difficulty of the classification problem.
 
 
 %Design choices:
