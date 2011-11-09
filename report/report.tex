@@ -40,9 +40,9 @@ If we keep the standard deviation of the distributions approsimately equal, then
 
 To show this effect we generated \ac{GMM}s with an increasing amount of components and measured their noise. The models where generated according tot he method described in section \ref{sec:experimental_method}. Averaged over 25 random models of the same number of components, it is clear that the noise increases with the number of components, growing asymptotically towards 0.5, which represents the amount of noise where the Bayes optimal decision is correct half of the time: chance level. The results are shown in Figure \ref{fig:noisepercomp}.
 
-\begin{figure}[H!]
+\begin{figure}[htb]
     \centering
-    \includegraphics[width=0.9\textwidth]{noisePerK.pdf}
+    \includegraphics[width=0.8\textwidth]{noise_per_k.pdf}
     \caption{The effect on the noise of the use of more mixture components in the \ac{GMM}. \label{fig:noisepercomp}}
 \end{figure}
 
@@ -67,31 +67,61 @@ For \ac{NB} we expect that for less smooth problems the expected loss will be hi
 \section{Results}
 \label{sec:results}
 
-\subsection{Naive Bayes}
-We trained Naive Bayes classifiers for all settings of the \ac{GMM} we defined in the last section. The resulting error is shown in Figure~\ref{fig:nbloss}, and the subdivision of this into bias and variance can be seen in Figures~\ref{fig:nbbias} and \ref{fig:nbvar} respectively.
+\subsection{KNN}
+In contrast to training a Naive Bayes classifier, for KNN it is important to choose a sensible value for K, the number of neighbors taken into account. Because training KNN completely for some different values of K only to find out good ones is very expensive, we decided to choose the best amount of K dynamically, each time a classifier is trained. The possible amounts of K are made dependent on the size of the training set, taking ten values $K \in \{0.1D,0.2D,\ldots,D\}$, to make K being in proportion to the amount of data available, and subsequently covering an approximately equally large area. We classify for each of these values, and store the highest performance of these. To be able to see what this leads to, we put the occurrences of different K's in histograms (Figures~\ref{fig:hist10} and \ref{fig:hist10000} show the results for a training set of 10 samples and 10000 samples respectively).
 
-\begin{figure}[H!]
+\begin{figure}[htb]
     \centering
-    \includegraphics[width=0.8\textwidth]{nb_loss_1-5c.pdf}
-    \caption{The average error of the Naive Bayes classifier on different amounts of training data, given different levels of smoothness of the data. \label{fig:nbloss}}
-\end{figure}
-\begin{figure}[H!]
-    \centering
-    \includegraphics[width=0.8\textwidth]{nb_bias_1-5c.pdf}
-    \caption{The average bias of the Naive Bayes classifier on different amounts of training data, given different levels of smoothness of the data. \label{fig:nbbias}}
-\end{figure}
-\begin{figure}[H!]
-    \centering
-    \includegraphics[width=0.8\textwidth]{nb_variance_1-5c.pdf}
-    \caption{The average variance of the Naive Bayes classifier on different amounts of training data, given different levels of smoothness of the data. \label{fig:nbvar}}
+    \includegraphics[width=.9\textwidth]{Hist10.pdf}
+    \caption{Histogram of the amount of occurrences of different values of K in KNN on a training set size of 10, over all trained classifiers, for different levels of smoothness (No of GMM components). \label{fig:hist10}}
 \end{figure}
 
-The figures show that in general, less training data results in a higher loss and variance, which was to be expected. Furthermore, the loss is higher when the smoothness increases. This might result solely from there being more noise, but Figure~\ref{fig:nbbias} shows that the bias increases sharply on less smooth data too.
-There is less increase in the amount of variance overall, but this increase seems to be more significant with less training data than on much training data.
-%Something on the dips in the variance? Wait for final results.
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=.9\textwidth]{Hist10000.pdf}
+    \caption{Histogram of the amount of occurrences of different values of K in KNN on a training set size of 10000, over all trained classifiers, for different levels of smoothness (No of GMM components). \label{fig:hist10000}}
+\end{figure}
 
-\subsection{kNN}
+The histograms show that the higher the amount of training sets, the larger the preference for relatively small values of K. Furthermore, the smoother data is overrepresented a little at low values of K, and the least smooth data is overrepresented at high values of K, for all amounts of training data. This suggests that smoother data is easier to represent (low values of K are optimal) by KNN, and that less data is needed with larger training set sizes. This however might also be caused by the Gaussian nature of the distribution of the data, it being likely that a small amount of data gives a quite good estimation of the mean of the distribution already, therefore one tenth of the training set size might be quite big already as the training set gets bigger itself. 
 
+\subsection{Classification}
+We trained Naive Bayes classifiers and KNN classifiers for all settings of the \ac{GMM} we defined in the last section. The resulting error is shown in Figure~\ref{fig:loss}. It can be seen that the loss is dependent on the amount of training data, with larger numbers of data lowering the loss (this improvement seems to slow towards more data being usd). Furthermore, KNN seems to work better for low amounts of training data. The difference between NB and KNN with more data is small, but KNN tends to be better with less smooth data and NB with smoother data.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=.9\textwidth]{loss_vs.pdf}
+    \caption{The average error (loss) of the classifiers on different amounts of training data, given different levels of smoothness of the data. \label{fig:loss}}
+\end{figure}
+
+Furthermore, the loss depends on the smoothness of the data: the more GMM components used per class, the higher the loss. The results show crudely the same trend as does the amount of noise with increased smoothness, so it might be the case that the increased loss is caused mainly by an increased amount of noise. Therefore, the bias and variance components of the loss were estimated separately. these results can be seen in Figures~\ref{fig:bias} and \ref{fig:var}. From Figure~\ref{fig:bias}, it is clear that the bias increases sharply when the smoothness of the data is reduced. There is little difference in the amounts of data used here, and again KNN seems to have more bias than NB on smooth data and less bias on less regular data. The variance component of the error does also increase with less smooth data, but less sharply than the bias does. Here, it becomes clear that the fact that training on small amounts of data performs less can be attributed to the higher variance, because the noise and bias don't differ significantly over this variable. It is clear too that KNN on low amounts of data is better due to a smaller variance component in the loss. For the other amounts of training data, NB seems to have consistently a little less variance.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=.9\textwidth]{bias_vs.pdf}
+    \caption{The average bias of the classifiers on different amounts of training data, given different levels of smoothness of the data. \label{fig:bias}}
+\end{figure}
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=.9\textwidth]{var_vs.pdf}
+    \caption{The average variance of the classifiers on different amounts of training data, given different levels of smoothness of the data. \label{fig:var}}
+\end{figure}
+
+We were interested in the relation between the loss of the classifiers and the components bias, variance and noise. As was reported in several papers (\emph{cf.} \cite{Domingos2000}), this relationship can be of a complex nature, although it is generally assumed to be a sum. To find a hint about this relationship in the algorithms used, we compared the loss with the naive way of combining the components: summing. The results are shown in Figures~\ref{fig:knnlosscomp} and \ref{fig:nblosscomp}.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=.9\textwidth]{5040_knn_losscomp.pdf}
+    \caption{KNN. Comparison of the average loss with the sum of the average bias, variance and noise. Each is normalized so all values for a data series sum to 1. \label{fig:knnlosscomp}}
+\end{figure}
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=.9\textwidth]{5050_nb_losscomp.pdf}
+    \caption{Naive Bayes. Comparison of the average loss with the sum of the average bias, variance and noise. Each is normalized so all values for a data series sum to 1. \label{fig:nblosscomp}}
+\end{figure}
+
+The results show that when normalized, the loss of each classification setting is very similar to the sum of its components, which suggests a linear relationship between them. It is not a simple sum because the sum of the components tends to be larger than the loss, but the graphs suggest there is no real intricate relationship with the settings used and the classifiers used.
 
 \section{Conclusion}
 
@@ -99,7 +129,7 @@ There is less increase in the amount of variance overall, but this increase seem
 
 %Design choices:
 % 2 class problem (2 PDFs) or concept learning problem (1 PDF versus rest). How to define the PDF (MVD, GMM, uniform)?
-% Things to vary and try out: number of dimensions, real noise (next to the inherent noise), different number of components per class or number of datapoints per class, forms of PDF, learning algorithm (NB, kNN, ANN, Dec. Trees, SVM).
+% Things to vary and try out: number of dimensions, real noise (next to the inherent noise), different number of components per class or number of datapoints per class, forms of PDF, learning algorithm (NB, KNN, ANN, Dec. Trees, SVM).
 
 %Initial experiments:
 % 2d 2 class

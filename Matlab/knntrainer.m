@@ -2,13 +2,17 @@
 predictions = zeros(test_size*2, length(sample_sizes), train_sets);
 best_loss = Inf .* ones(length(sample_sizes), no_of_tests, train_sets);
 
+
 for evaliter = 1:train_sets
     for kN = 1:round(sample_sizes(1)*2/10):sample_sizes(1)*2
         idx = knnsearch(sample_1(:, 1:2, evaliter, iter), sample_t(:, 1:2, iter), 'k', kN);
         labels = sample_1(:,3,evaliter,iter);
         cur_predictions = mode(labels(idx),2);
-        if mean(abs(cur_predictions - sample_t(:,3, iter))) < best_loss(1, iter, evaliter)
+        curloss = mean(abs(cur_predictions - sample_t(:,3, iter)));
+        if curloss < best_loss(1, iter, evaliter)
+            best_loss(1,iter,evaliter) = curloss;
             predictions(:,1,evaliter) = cur_predictions;
+            KKNN(1,k,iter,evaliter) = kN;
         end
     end
     
@@ -16,8 +20,11 @@ for evaliter = 1:train_sets
         idx = knnsearch(sample_2(:, 1:2, evaliter, iter), sample_t(:, 1:2, iter), 'k', kN);
         labels = sample_2(:,3,evaliter,iter);
         cur_predictions = mode(labels(idx),2);
-        if mean(abs(cur_predictions - sample_t(:,3, iter))) < best_loss(2, iter, evaliter)
+        curloss = mean(abs(cur_predictions - sample_t(:,3, iter)));
+        if curloss < best_loss(2, iter, evaliter)
+            best_loss(2,iter,evaliter) = curloss;
             predictions(:,2,evaliter) = cur_predictions;
+            KKNN(2,k,iter,evaliter) = kN;
         end
     end
     
@@ -25,8 +32,11 @@ for evaliter = 1:train_sets
         idx = knnsearch(sample_3(:, 1:2, evaliter, iter), sample_t(:, 1:2, iter), 'k', kN);
         labels = sample_3(:,3,evaliter,iter);
         cur_predictions = mode(labels(idx),2);
-        if mean(abs(cur_predictions - sample_t(:,3, iter))) < best_loss(3, iter, evaliter)
+        curloss = mean(abs(cur_predictions - sample_t(:,3, iter)));
+        if curloss < best_loss(3, iter, evaliter)
+            best_loss(3,iter,evaliter) = curloss;
             predictions(:,3,evaliter) = cur_predictions;
+            KKNN(3,k,iter,evaliter) = kN;
         end
     end
     
@@ -34,8 +44,11 @@ for evaliter = 1:train_sets
         idx = knnsearch(sample_4(:, 1:2, evaliter, iter), sample_t(:, 1:2, iter), 'k', kN);
         labels = sample_4(:,3,evaliter,iter);
         cur_predictions = mode(labels(idx),2);
-        if mean(abs(cur_predictions - sample_t(:,3, iter))) < best_loss(4, iter, evaliter)
+        curloss = mean(abs(cur_predictions - sample_t(:,3, iter)));
+        if curloss < best_loss(4, iter, evaliter)
+            best_loss(4,iter,evaliter) = curloss;
             predictions(:,4,evaliter) = cur_predictions;
+            KKNN(4,k,iter,evaliter) = kN;
         end
     end
 end
